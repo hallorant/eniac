@@ -5,8 +5,8 @@
 
 #include "log.h"
 
-const int kLineSize = 1024;
-const int kMnemonicSize = 5;
+#define kLineSize 1024
+#define kMnemonicSize 5
 
 char *source_filename;
 FILE *source_file;
@@ -107,6 +107,10 @@ Order ENIAC_converter_code[] = {
     {"19T", 39, 0, 6 /*A.T.*/},
     {"20T", 30, 0, 6 /*A.T.*/},
 };
+
+bool match(const char* text, const char* within, int* mutable_index) {
+  
+}
 
 bool read_next_line() {
   if (fgets(line, kLineSize, source_file) == NULL) {
