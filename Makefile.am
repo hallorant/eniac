@@ -11,12 +11,14 @@ libeasm_la_SOURCES = \
 bin_PROGRAMS = easm
 easm_SOURCES = src/easm.c
 easm_LDADD = libeasm.la
+easm_LDFLAGS = -static
 
 TESTS = tests/check_lex
 check_PROGRAMS = tests/check_lex
 
 tests_check_lex_SOURCES = \
 	tests/check_lex.c
+tests_check_lex_LDFLAGS = -static
 tests_check_lex_CFLAGS = @CHECK_CFLAGS@
 tests_check_lex_LDADD = libeasm.la @CHECK_LIBS@
 
