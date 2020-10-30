@@ -13,12 +13,13 @@ easm_SOURCES = src/easm.c
 easm_LDADD = libeasm.la
 easm_LDFLAGS = -static
 
-TESTS = tests/check_lex
-check_PROGRAMS = tests/check_lex
+TESTS = tests/suite
+check_PROGRAMS = tests/suite
 
-tests_check_lex_SOURCES = \
-	tests/check_lex.c
-tests_check_lex_LDFLAGS = -static
-tests_check_lex_CFLAGS = @CHECK_CFLAGS@
-tests_check_lex_LDADD = libeasm.la @CHECK_LIBS@
-
+tests_suite_SOURCES = \
+	tests/check_lex.c \
+	tests/check_lex.h \
+	tests/suite.c
+tests_suite_LDFLAGS = -static
+tests_suite_CFLAGS = @CHECK_CFLAGS@
+tests_suite_LDADD = libeasm.la @CHECK_LIBS@

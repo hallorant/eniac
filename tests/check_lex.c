@@ -1,4 +1,4 @@
-#include <check.h>
+#include "check_lex.h"
 
 #include "../src/lex.h"
 
@@ -86,22 +86,10 @@ START_TEST(test_try_to_match_keyword) {
 }
 END_TEST
 
-Suite *money_suite() {
-  Suite *s = suite_create("ENIAC Assembler");
-  TCase *tc_core = tcase_create("Core");
-  tcase_add_test(tc_core, test_try_to_match_whitespace);
-  tcase_add_test(tc_core, test_try_to_match_digit);
-  tcase_add_test(tc_core, test_try_to_match_keyword);
-  suite_add_tcase(s, tc_core);
-  return s;
-}
-
-int main() {
-  int number_failed;
-  Suite *s = money_suite();
-  SRunner *sr = srunner_create(s);
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-  return (number_failed == 0) ? 0 : CK_FAILURE;
+TCase *lex_tcase() {
+  TCase *tc = tcase_create("lex - lexical analysis");
+  tcase_add_test(tc, test_try_to_match_whitespace);
+  tcase_add_test(tc, test_try_to_match_digit);
+  tcase_add_test(tc, test_try_to_match_keyword);
+  return tc;
 }

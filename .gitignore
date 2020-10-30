@@ -1,6 +1,6 @@
 # Executables
 easm
-tests/check_lex
+tests/suite
 
 # Autotools
 Makefile
