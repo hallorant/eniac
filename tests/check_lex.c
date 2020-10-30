@@ -2,36 +2,104 @@
 
 #include "../src/lex.h"
 
-START_TEST(test_match_keyword) {
-  int index = 0;
-  ck_assert_int_eq(match_keyword("foo", "foobar", &index), true);
+START_TEST(test_try_to_match_whitespace) {
+  int index;
+
+  index = 0;
+  ck_assert(try_to_match_whitespace(" ", &index));
+  ck_assert_int_eq(index, 1);
+  index = 0;
+  ck_assert(try_to_match_whitespace("\t", &index));
+  ck_assert_int_eq(index, 1);
+  index = 0;
+  ck_assert(!try_to_match_whitespace("", &index));
+  ck_assert_int_eq(index, 0);
+  index = 2;
+  ck_assert(try_to_match_whitespace(" ; ", &index));
   ck_assert_int_eq(index, 3);
+  index = 1;
+  ck_assert(!try_to_match_whitespace(" ; ", &index));
+  ck_assert_int_eq(index, 1);
+  index = 2;
+  ck_assert(try_to_match_whitespace("Rd\t\t\tPr", &index));
+  ck_assert_int_eq(index, 5);
+  index = 2;
+  ck_assert(try_to_match_whitespace("Rd\t\t\t", &index));
+  ck_assert_int_eq(index, 5);
+  index = 2;
+  ck_assert(!try_to_match_whitespace("RdPr", &index));
+  ck_assert_int_eq(index, 2);
 }
 END_TEST
 
-Suite *money_suite(void) {
-  Suite *s;
-  TCase *tc_core;
+START_TEST(test_try_to_match_digit) {
+  int index;
+  int digit;
 
-  s = suite_create("ENIAC Assembler");
+  index = 0;
+  ck_assert(try_to_match_digit("5", &index, &digit));
+  ck_assert_int_eq(index, 1);
+  ck_assert_int_eq(digit, 5);
+  index = 1;
+  ck_assert(try_to_match_digit("50", &index, &digit));
+  ck_assert_int_eq(index, 2);
+  ck_assert_int_eq(digit, 0);
+  index = 0;
+  ck_assert(!try_to_match_digit("*", &index, &digit));
+  ck_assert_int_eq(index, 0);
+  index = 2;
+  ck_assert(!try_to_match_digit("50*", &index, &digit));
+  ck_assert_int_eq(index, 2);
+  index = 0;
+  ck_assert(!try_to_match_digit(" 5", &index, &digit));
+  ck_assert_int_eq(index, 0);
+}
+END_TEST
 
-  /* Core test case */
-  tc_core = tcase_create("Core");
+START_TEST(test_try_to_match_keyword) {
+  int index;
 
-  tcase_add_test(tc_core, test_match_keyword);
+  index = 0;
+  ck_assert(!try_to_match_keyword("", &index, "Rd"));
+  ck_assert_int_eq(index, 0);
+  index = 0;
+  ck_assert(try_to_match_keyword("RdPr", &index, "Rd"));
+  ck_assert_int_eq(index, 2);
+  index = 0;
+  ck_assert(try_to_match_keyword("rdpr", &index, "Rd"));
+  ck_assert_int_eq(index, 2);
+  index = 0;
+  ck_assert(!try_to_match_keyword("RdPr", &index, "Pr"));
+  ck_assert_int_eq(index, 0);
+  index = 2;
+  ck_assert(try_to_match_keyword("RdPr", &index, "Pr"));
+  ck_assert_int_eq(index, 4);
+  index = 2;
+  ck_assert(try_to_match_keyword("RDPR", &index, "Pr"));
+  ck_assert_int_eq(index, 4);
+  index = 2;
+  ck_assert(try_to_match_keyword("Rd;Pr", &index, ";"));
+  ck_assert_int_eq(index, 3);
+  index = 2;
+  ck_assert(!try_to_match_keyword("Rd", &index, "Pr"));
+  ck_assert_int_eq(index, 2);
+}
+END_TEST
+
+Suite *money_suite() {
+  Suite *s = suite_create("ENIAC Assembler");
+  TCase *tc_core = tcase_create("Core");
+  tcase_add_test(tc_core, test_try_to_match_whitespace);
+  tcase_add_test(tc_core, test_try_to_match_digit);
+  tcase_add_test(tc_core, test_try_to_match_keyword);
   suite_add_tcase(s, tc_core);
-
   return s;
 }
 
-int main(void) {
+int main() {
   int number_failed;
-  Suite *s;
-  SRunner *sr;
-
-  s = money_suite();
-  sr = srunner_create(s);
-
+  Suite *s = money_suite();
+  SRunner *sr = srunner_create(s);
   srunner_run_all(sr, CK_NORMAL);
   number_failed = srunner_ntests_failed(sr);
   srunner_free(sr);
