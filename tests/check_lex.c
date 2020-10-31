@@ -86,10 +86,99 @@ START_TEST(test_try_to_match_keyword) {
 }
 END_TEST
 
+START_TEST(test_try_to_match_label) {
+  int index;
+  char label[10];
+
+  index = 0;
+  ck_assert(try_to_match_label("label", &index, label, 10));
+  ck_assert_int_eq(index, 5);
+  ck_assert_str_eq(label, "label");
+  index = 2;
+  ck_assert(try_to_match_label("label", &index, label, 10));
+  ck_assert_int_eq(index, 5);
+  ck_assert_str_eq(label, "bel");
+  index = 0;
+  ck_assert(!try_to_match_label("label", &index, label, 1));
+  ck_assert_int_eq(index, 0);
+  index = 0;
+  ck_assert(!try_to_match_label(" label", &index, label, 10));
+  ck_assert_int_eq(index, 0);
+  index = 2;
+  ck_assert(try_to_match_label("  b12_c12(", &index, label, 10));
+  ck_assert_int_eq(index, 9);
+  ck_assert_str_eq(label, "b12_c12");
+  index = 2;
+  ck_assert(try_to_match_label("  _c12(", &index, label, 10));
+  ck_assert_int_eq(index, 6);
+  ck_assert_str_eq(label, "_c12");
+  index = 0;
+  ck_assert(!try_to_match_label("label", &index, label, 3));
+  ck_assert_int_eq(index, 0);
+  index = 0;
+  ck_assert(!try_to_match_label("label", &index, label, 5));
+  ck_assert_int_eq(index, 0);
+}
+END_TEST
+
+START_TEST(test_try_to_match_label_decl) {
+  int index;
+  char label[10];
+
+  index = 0;
+  ck_assert(try_to_match_label_decl("label:", &index, label, 10));
+  ck_assert_int_eq(index, 6);
+  ck_assert_str_eq(label, "label");
+  index = 0;
+  ck_assert(!try_to_match_label_decl("label", &index, label, 10));
+  ck_assert_int_eq(index, 0);
+  index = 2;
+  ck_assert(try_to_match_label_decl("label:", &index, label, 10));
+  ck_assert_int_eq(index, 6);
+  ck_assert_str_eq(label, "bel");
+  index = 0;
+  ck_assert(!try_to_match_label_decl("label", &index, label, 1));
+  ck_assert_int_eq(index, 0);
+  index = 0;
+  ck_assert(!try_to_match_label_decl(" label", &index, label, 10));
+  ck_assert_int_eq(index, 0);
+  index = 2;
+  ck_assert(try_to_match_label_decl("  b12_c12:(", &index, label, 10));
+  ck_assert_int_eq(index, 10);
+  ck_assert_str_eq(label, "b12_c12");
+  index = 2;
+  ck_assert(try_to_match_label_decl("  _c12:(", &index, label, 10));
+  ck_assert_int_eq(index, 7);
+  ck_assert_str_eq(label, "_c12");
+  index = 0;
+  ck_assert(!try_to_match_label_decl("label", &index, label, 3));
+  ck_assert_int_eq(index, 0);
+  index = 0;
+  ck_assert(!try_to_match_label_decl("label", &index, label, 5));
+  ck_assert_int_eq(index, 0);
+}
+END_TEST
+
+START_TEST(test_try_to_match_eol) {
+  int index;
+  char label[10];
+
+  index = 0;
+  ck_assert(try_to_match_eol("\t\t; this is a comment", &index));
+  ck_assert_int_eq(index, 21);
+  index = 0;
+  ck_assert(!try_to_match_eol(" Rd\t; get next punched card", &index));
+  ck_assert_int_eq(index, 0);
+}
+END_TEST
+
 TCase *lex_tcase() {
   TCase *tc = tcase_create("lex - lexical analysis");
   tcase_add_test(tc, test_try_to_match_whitespace);
   tcase_add_test(tc, test_try_to_match_digit);
   tcase_add_test(tc, test_try_to_match_keyword);
+  tcase_add_test(tc, test_try_to_match_label);
+  tcase_add_test(tc, test_try_to_match_label_decl);
+  tcase_add_test(tc, test_try_to_match_eol);
   return tc;
 }
