@@ -59,7 +59,7 @@ bool try_to_match_label(char* line, int* mutable_index, char* mutable_label,
                         const int label_size) {
   const int original_index = *mutable_index;
   if (label_size < 2) {
-    LOG_ERROR("label_size must be >= 2 : %d", label_size);
+    LOG_ERROR("label_size must be >= 2 : label_size=%d", label_size);
     return false;
   }
   char value;
@@ -74,7 +74,7 @@ bool try_to_match_label(char* line, int* mutable_index, char* mutable_label,
   while (try_to_match_letter_or_underscore(line, mutable_index, &value,
                                            /*also_allow_digit=*/true)) {
     if (size == label_size - 2) {
-      LOG_ERROR("label_size of %d cannot fit label %s...", label_size,
+      LOG_ERROR("label_size of %d cannot fit label '%s<truncated>'", label_size,
                 mutable_label);
       *mutable_index = original_index;  // Restore index due to failure.
       return false;
