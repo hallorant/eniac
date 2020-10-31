@@ -163,11 +163,32 @@ START_TEST(test_try_to_match_eol) {
   int index;
   char label[10];
 
+  index = 3;
+  ck_assert(try_to_match_eol("\tRd", &index));
+  ck_assert_int_eq(index, 3);
+  index = 3;
+  ck_assert(try_to_match_eol("\tRd ", &index));
+  ck_assert_int_eq(index, 4);
   index = 0;
-  ck_assert(try_to_match_eol("\t\t; this is a comment", &index));
-  ck_assert_int_eq(index, 21);
+  ck_assert(try_to_match_eol("\t\t; a comment", &index));
+  ck_assert_int_eq(index, 13);
   index = 0;
-  ck_assert(!try_to_match_eol(" Rd\t; get next punched card", &index));
+  ck_assert(try_to_match_eol("\t\t* a comment", &index));
+  ck_assert_int_eq(index, 13);
+  index = 0;
+  ck_assert(try_to_match_eol("\t\t# a comment", &index));
+  ck_assert_int_eq(index, 13);
+  index = 2;
+  ck_assert(try_to_match_eol("\t\t; a comment", &index));
+  ck_assert_int_eq(index, 13);
+  index = 2;
+  ck_assert(try_to_match_eol("\t\t* a comment", &index));
+  ck_assert_int_eq(index, 13);
+  index = 2;
+  ck_assert(try_to_match_eol("\t\t# a comment", &index));
+  ck_assert_int_eq(index, 13);
+  index = 0;
+  ck_assert(!try_to_match_eol(" Rd\t; next punched card", &index));
   ck_assert_int_eq(index, 0);
 }
 END_TEST

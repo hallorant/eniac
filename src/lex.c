@@ -16,6 +16,17 @@ static bool try_to_match_letter_or_underscore(char* line, int* mutable_index,
   return true;
 }
 
+// Comments start with ';' '*' or '#' and extend to the end of the line.
+static bool try_to_match_comment(char* line, int* mutable_index) {
+  if (try_to_match_keyword(line, mutable_index, ";") ||
+      try_to_match_keyword(line, mutable_index, "*") ||
+      try_to_match_keyword(line, mutable_index, "#")) {
+    *mutable_index = strlen(line);
+    return true;
+  }
+  return false;
+}
+
 bool try_to_match_whitespace(char* line, int* mutable_index) {
   line += *mutable_index;
   if (!isspace(*line)) return false;
@@ -93,10 +104,7 @@ bool try_to_match_eol(char* line, int* mutable_index) {
   if (*mutable_index == line_size) return true;
   try_to_match_whitespace(line, mutable_index);
   if (*mutable_index == line_size) return true;
-  if (try_to_match_keyword(line, mutable_index, ";")) {  // Comment
-    *mutable_index = line_size;
-    return true;
-  }
+  if (try_to_match_comment(line, mutable_index)) return true;
   // We might have matched just whitespace, so restore the index.
   *mutable_index = original_index;
   return false;
