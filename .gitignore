@@ -1,6 +1,7 @@
 # Executables
 easm
 tests/suite
+**/*.exe
 
 # Autotools
 Makefile
